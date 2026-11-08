@@ -1,5 +1,6 @@
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 
+import { queryClient } from '../lib/query-client';
 import { useAuthStore } from '../stores/auth-store';
 
 // ทุก request ไปที่ VITE_API_URL (ตั้งค่าในไฟล์ .env) โดยตรง ไม่ผ่าน proxy
@@ -18,5 +19,17 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// response interceptor: ถ้าได้ 401 ระหว่างที่ยังถือ token อยู่ (token หมดอายุหรือไม่ถูกต้อง)
-// ให้ clearAuth() และ queryClient.clear() แล้วส่ง error ต่อ (Promise.reject)
+// response interceptor: ได้ 401 ระหว่างที่ยังถือ token อยู่ แปลว่า token หมดอายุหรือไม่ถูกต้อง
+// จึงล้าง token และ cache ให้ ProtectedRoute พาไปหน้า login
+// ถ้าไม่มี token (เช่น login ผิด) ไม่ต้องทำอะไร ให้หน้านั้นแสดง error เอง
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const { accessToken, clearAuth } = useAuthStore.getState();
+    if (isAxiosError(error) && error.response?.status === 401 && accessToken) {
+      clearAuth();
+      queryClient.clear();
+    }
+    return Promise.reject(error);
+  },
+);
