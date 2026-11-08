@@ -1,8 +1,6 @@
-// ฟังก์ชันเรียก API ของ auth: นักเรียนเขียนเองในไฟล์นี้ ตามแบบ api/todos.ts
-//
-// register(input: RegisterInput): Promise<User>       POST /auth/register
-// login(input: LoginInput): Promise<LoginResponse>    POST /auth/login
-// getMe(): Promise<User>                              GET  /auth/me
+// ฟังก์ชันเรียก API ของ auth ทุกตัว คืนค่าเป็น res.data
+import { apiClient } from './client';
+import type { User } from './types';
 
 export type RegisterInput = {
   email: string;
@@ -17,3 +15,8 @@ export type LoginInput = {
 export type LoginResponse = {
   accessToken: string;
 };
+
+export async function register(input: RegisterInput): Promise<User> {
+  const res = await apiClient.post<User>('/auth/register', input);
+  return res.data;
+}

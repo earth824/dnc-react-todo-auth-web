@@ -1,8 +1,11 @@
 // หน้าสมัครสมาชิก: ฟอร์ม email, password และ confirm password
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { z } from 'zod';
+
+import { getApiErrorCode } from '../api/errors';
+import { useRegister } from '../hooks/use-auth';
 
 // confirmPassword ตรวจที่ frontend เท่านั้น ตอนส่ง API ให้ส่งแค่ { email, password }
 const registerSchema = z
@@ -32,10 +35,20 @@ export default function RegisterPage() {
     },
   });
 
-  const onSubmit = (data: RegisterFormValues) => {
-    // แทนด้วยการเรียก register mutation
-    console.log(data);
+  const navigate = useNavigate();
+
+  const registerMutation = useRegister({
+    onSuccess: () => navigate('/login'),
+  });
+
+  const onSubmit = ({ email, password }: RegisterFormValues) => {
+    registerMutation.mutate({ email, password });
   };
+
+  const errorMessage =
+    getApiErrorCode(registerMutation.error) === 'EMAIL_ALREADY_EXISTS'
+      ? 'Email is already registered.'
+      : 'Could not create account.';
 
   return (
     <div className="space-y-4">
@@ -92,8 +105,13 @@ export default function RegisterPage() {
           )}
         </div>
 
+        {registerMutation.isError && (
+          <p className="text-sm text-red-600">{errorMessage}</p>
+        )}
+
         <button
           type="submit"
+          disabled={registerMutation.isPending}
           className="w-full rounded bg-violet-600 px-3 py-2 text-white disabled:opacity-50"
         >
           Create account
