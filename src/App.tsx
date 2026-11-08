@@ -1,11 +1,15 @@
-import logo from './assets/devnest-icon-light.png';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { RouterProvider } from 'react-router';
 
-// หน้าชั่วคราว จะแทนด้วย RouterProvider ในขั้นถัดไป
+import { queryClient } from './lib/query-client';
+import { router } from './router';
+
 export default function App() {
   return (
-    <div className="mx-auto flex max-w-xl items-center gap-3 p-4">
-      <img src={logo} alt="DevNest" className="size-8" />
-      <h1 className="text-xl font-semibold text-violet-600">DevNest Todo</h1>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+      <ReactQueryDevtools />
+    </QueryClientProvider>
   );
 }
