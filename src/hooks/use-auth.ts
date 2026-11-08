@@ -1,6 +1,7 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import {
+  getMe,
   login,
   register,
   type LoginInput,
@@ -28,5 +29,15 @@ export function useLogin({ onSuccess }: MutationOptions = {}) {
       setAccessToken(data.accessToken);
       onSuccess?.();
     },
+  });
+}
+
+export function useMe() {
+  const accessToken = useAuthStore((state) => state.accessToken);
+
+  return useQuery({
+    queryKey: ['me'],
+    queryFn: () => getMe(),
+    enabled: accessToken !== null,
   });
 }
