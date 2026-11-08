@@ -20,3 +20,8 @@ export async function register(input: RegisterInput): Promise<User> {
   const res = await apiClient.post<User>('/auth/register', input);
   return res.data;
 }
+
+export async function login(input: LoginInput): Promise<LoginResponse> {
+  const res = await apiClient.post<LoginResponse>('/auth/login', input);
+  return res.data;
+}
