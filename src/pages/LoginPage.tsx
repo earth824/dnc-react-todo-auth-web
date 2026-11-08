@@ -1,7 +1,7 @@
 // หน้าเข้าสู่ระบบ: ฟอร์ม email และ password
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { z } from 'zod';
 
 import { getApiErrorCode } from '../api/errors';
@@ -27,11 +27,8 @@ export default function LoginPage() {
     },
   });
 
-  const navigate = useNavigate();
-
-  const loginMutation = useLogin({
-    onSuccess: () => navigate('/todos'),
-  });
+  // ไม่ต้อง navigate เอง พอได้ token แล้ว GuestRoute จะพาไปหน้าที่ถูกต้องให้
+  const loginMutation = useLogin();
 
   const onSubmit = (data: LoginFormValues) => {
     loginMutation.mutate(data);
