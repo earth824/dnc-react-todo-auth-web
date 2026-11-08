@@ -1,0 +1,14 @@
+// route สำหรับคนที่ยังไม่ล็อกอิน: มี token แล้วให้ไปหน้ารายการ
+import { Navigate, Outlet } from 'react-router';
+
+import { useAuthStore } from '../stores/auth-store';
+
+export default function GuestRoute() {
+  const accessToken = useAuthStore((state) => state.accessToken);
+
+  if (accessToken) {
+    return <Navigate to="/todos" replace />;
+  }
+
+  return <Outlet />;
+}

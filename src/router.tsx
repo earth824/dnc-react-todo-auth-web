@@ -1,5 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router';
 
+import GuestRoute from './components/GuestRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 import AppLayout from './layouts/AppLayout';
 import AuthLayout from './layouts/AuthLayout';
 import EditTodoPage from './pages/EditTodoPage';
@@ -12,18 +14,28 @@ import TodoListPage from './pages/TodoListPage';
 // route ลูกใน children จะแสดงตรง <Outlet /> ของ layout นั้น
 export const router = createBrowserRouter([
   {
-    element: <AuthLayout />,
+    element: <GuestRoute />,
     children: [
-      { path: '/login', element: <LoginPage /> },
-      { path: '/register', element: <RegisterPage /> },
+      {
+        element: <AuthLayout />,
+        children: [
+          { path: '/login', element: <LoginPage /> },
+          { path: '/register', element: <RegisterPage /> },
+        ],
+      },
     ],
   },
   {
-    element: <AppLayout />,
+    element: <ProtectedRoute />,
     children: [
-      { path: '/todos', element: <TodoListPage /> },
-      { path: '/todos/new', element: <NewTodoPage /> },
-      { path: '/todos/:id', element: <EditTodoPage /> },
+      {
+        element: <AppLayout />,
+        children: [
+          { path: '/todos', element: <TodoListPage /> },
+          { path: '/todos/new', element: <NewTodoPage /> },
+          { path: '/todos/:id', element: <EditTodoPage /> },
+        ],
+      },
     ],
   },
   // path อื่นทั้งหมด (รวมถึง /) กลับไปหน้ารายการ

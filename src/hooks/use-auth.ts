@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router';
 
 import {
   getMe,
@@ -44,14 +43,13 @@ export function useMe() {
 }
 
 // ล้าง cache ด้วย ไม่อย่างนั้นถ้าล็อกอินเป็นคนอื่นต่อ จะเห็นข้อมูลของคนเก่า
+// ไม่ต้อง navigate เอง เพราะพอ token หายไป ProtectedRoute จะพาไปหน้า login ให้
 export function useLogout() {
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
   return () => {
     clearAuth();
     queryClient.clear();
-    navigate('/login');
   };
 }
