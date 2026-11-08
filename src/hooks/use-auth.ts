@@ -1,4 +1,5 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router';
 
 import {
   getMe,
@@ -40,4 +41,17 @@ export function useMe() {
     queryFn: () => getMe(),
     enabled: accessToken !== null,
   });
+}
+
+// ล้าง cache ด้วย ไม่อย่างนั้นถ้าล็อกอินเป็นคนอื่นต่อ จะเห็นข้อมูลของคนเก่า
+export function useLogout() {
+  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  return () => {
+    clearAuth();
+    queryClient.clear();
+    navigate('/login');
+  };
 }
