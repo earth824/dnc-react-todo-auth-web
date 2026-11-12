@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router';
 import { z } from 'zod';
+import { useRegister } from '../hooks/use-auth';
 
 // confirmPassword ตรวจที่ frontend เท่านั้น ตอนส่ง API ให้ส่งแค่ { email, password }
 const registerSchema = z
@@ -32,9 +33,10 @@ export default function RegisterPage() {
     },
   });
 
+  const registerMutation = useRegister();
+
   const onSubmit = (data: RegisterFormValues) => {
-    // แทนด้วยการเรียก register mutation
-    console.log(data);
+    registerMutation.mutate({ email: data.email, password: data.password });
   };
 
   return (
