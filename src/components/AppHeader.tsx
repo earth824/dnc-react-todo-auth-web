@@ -2,8 +2,12 @@
 import { Link } from 'react-router';
 
 import logo from '../assets/devnest-icon-light.png';
+import { useLogout, useMe } from '../hooks/use-auth';
 
 export default function AppHeader() {
+  const logout = useLogout();
+  const { data: authUser } = useMe();
+
   return (
     <header className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
       <Link to="/todos">
@@ -11,8 +15,8 @@ export default function AppHeader() {
       </Link>
 
       <div className="flex items-center gap-4 text-sm">
-        <span className="text-gray-500">user@example.com</span>
-        <button type="button" className="text-violet-700">
+        <span className="text-gray-500">{authUser?.email}</span>
+        <button type="button" className="text-violet-700" onClick={logout}>
           Log out
         </button>
       </div>

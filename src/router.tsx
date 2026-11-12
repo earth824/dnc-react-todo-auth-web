@@ -7,25 +7,38 @@ import LoginPage from './pages/LoginPage';
 import NewTodoPage from './pages/NewTodoPage';
 import RegisterPage from './pages/RegisterPage';
 import TodoListPage from './pages/TodoListPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import GuestRoute from './components/GuestRoute';
 
 // layout route: route ที่มี element แต่ไม่มี path
 // route ลูกใน children จะแสดงตรง <Outlet /> ของ layout นั้น
 export const router = createBrowserRouter([
   {
-    element: <AuthLayout />,
+    element: <GuestRoute />,
     children: [
-      { path: '/login', element: <LoginPage /> },
-      { path: '/register', element: <RegisterPage /> },
+      {
+        element: <AuthLayout />,
+        children: [
+          { path: '/login', element: <LoginPage /> },
+          { path: '/register', element: <RegisterPage /> },
+        ],
+      },
     ],
   },
   {
-    element: <AppLayout />,
+    element: <ProtectedRoute />,
     children: [
-      { path: '/todos', element: <TodoListPage /> },
-      { path: '/todos/new', element: <NewTodoPage /> },
-      { path: '/todos/:id', element: <EditTodoPage /> },
+      {
+        element: <AppLayout />,
+        children: [
+          { path: '/todos', element: <TodoListPage /> },
+          { path: '/todos/new', element: <NewTodoPage /> },
+          { path: '/todos/:id', element: <EditTodoPage /> },
+        ],
+      },
     ],
   },
+
   // path อื่นทั้งหมด (รวมถึง /) กลับไปหน้ารายการ
   { path: '*', element: <Navigate to="/todos" replace /> },
 ]);

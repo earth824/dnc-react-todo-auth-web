@@ -1,8 +1,10 @@
 // หน้าเข้าสู่ระบบ: ฟอร์ม email และ password
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { z } from 'zod';
+import { useLogin } from '../hooks/use-auth';
+import { getApiErrorCode } from '../api/errors';
 
 const loginSchema = z.object({
   email: z.email('Invalid email address.'),
@@ -24,10 +26,20 @@ export default function LoginPage() {
     },
   });
 
+  const navigate = useNavigate();
+
+  const loginMutation = useLogin({
+    onSuccess: () => navigate('/todos'),
+  });
+
   const onSubmit = (data: LoginFormValues) => {
-    // แทนด้วยการเรียก login mutation
-    console.log(data);
+    loginMutation.mutate(data);
   };
+
+  const errorMessage =
+    getApiErrorCode(loginMutation.error) === 'INVALID_CREDENTIALS'
+      ? 'Invalid email or password'
+      : 'Could not login';
 
   return (
     <div className="space-y-4">
@@ -65,6 +77,10 @@ export default function LoginPage() {
             <p className="text-sm text-red-600">{errors.password.message}</p>
           )}
         </div>
+
+        {loginMutation.isError && (
+          <p className="text-sm text-red-600">{errorMessage}</p>
+        )}
 
         <button
           type="submit"
